@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumen Harbor Insurance (Fictional Demo)</title>
+<meta name="description" content="A fictional insurance company website built as a portfolio project to showcase an AI risk assessment agent made with Microsoft Copilot Studio. Not a real insurer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0c2238;
+    --fog: #e9eff2;
+    --paper: #f6f9fa;
+    --line: #c3d0d7;
+    --teal: #1f6f78;
+    --beacon: #f0b429;
+    --muted: #465d6e;
+    --display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+    --body: "Literata", Georgia, "Times New Roman", serif;
+    --gutter: clamp(20px, 5vw, 64px);
+    --max: 1120px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--fog);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: var(--display); line-height: 1.08; margin: 0; letter-spacing: -0.015em; }
+  p { margin: 0; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--beacon); outline-offset: 3px; }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+
+  /* Fictional notice */
+  .notice {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 0.9rem;
+    padding: 10px 0;
+  }
+  .notice .wrap { display: flex; gap: 12px; align-items: baseline; }
+  .notice strong { color: var(--beacon); font-weight: 600; white-space: nowrap; }
+
+  /* Header */
+  header.site { padding: 22px 0; }
+  header.site .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; font-family: var(--display); font-weight: 700; font-size: 1.25rem; letter-spacing: -0.01em; }
+  .brand svg { width: 34px; height: 34px; flex: none; }
+  nav.primary { display: flex; align-items: center; gap: 28px; font-family: var(--display); font-weight: 500; font-size: 0.98rem; }
+  nav.primary a { text-decoration: none; }
+  nav.primary a:hover { text-decoration: underline; text-underline-offset: 5px; }
+  @media (max-width: 720px) { nav.primary a.hide-sm { display: none; } }
+
+  .btn {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 1rem;
+    border: 2px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    line-height: 1.2;
+  }
+  .btn:hover { background: #12365a; }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn.ghost:hover { background: rgba(12, 34, 56, 0.08); }
+
+  /* Hero */
+  .hero { padding: clamp(28px, 6vw, 72px) 0 clamp(40px, 7vw, 88px); }
+  .hero .wrap { display: grid; gap: 40px; align-items: center; }
+  @media (min-width: 900px) { .hero .wrap { grid-template-columns: 1.05fr 0.95fr; gap: 56px; } }
+  .hero h1 { font-size: clamp(2.5rem, 6.2vw, 4.6rem); font-weight: 700; max-width: 13ch; }
+  .hero p.lede { margin-top: 22px; max-width: 46ch; font-size: 1.15rem; color: var(--muted); }
+  .hero .actions { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .hero .fine { margin-top: 18px; font-size: 0.95rem; color: var(--muted); max-width: 46ch; }
+
+  .chart { margin: 0; }
+  .chart svg { width: 100%; height: auto; display: block; }
+  .chart figcaption { margin-top: 10px; font-size: 0.95rem; color: var(--muted); max-width: 46ch; }
+  .contour { fill: none; stroke: var(--teal); stroke-width: 1.6; stroke-linejoin: round; }
+  .contour.fill-1 { fill: rgba(31, 111, 120, 0.06); }
+  .contour.fill-2 { fill: rgba(31, 111, 120, 0.09); }
+  .contour.fill-3 { fill: rgba(31, 111, 120, 0.13); }
+  .contour.fill-4 { fill: rgba(31, 111, 120, 0.18); }
+  .sounding { font-family: var(--display); font-size: 15px; fill: var(--teal); font-weight: 500; }
+  .grid-line { stroke: var(--line); stroke-width: 1; }
+  .beacon-ring { fill: var(--beacon); stroke: var(--ink); stroke-width: 2; }
+  .beacon-num { font-family: var(--display); font-weight: 700; font-size: 30px; fill: var(--ink); }
+  .beacon-label { font-family: var(--display); font-weight: 600; font-size: 15px; fill: var(--ink); }
+
+  .draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 2.2s cubic-bezier(.4,.1,.2,1) forwards; animation-delay: calc(var(--i) * 0.28s); }
+  .fade-in { opacity: 0; animation: fade 0.8s ease-out forwards; animation-delay: 2.1s; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes fade { to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .draw { animation: none; stroke-dashoffset: 0; }
+    .fade-in { animation: none; opacity: 1; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* Sections */
+  section.block { padding: clamp(44px, 7vw, 88px) 0; border-top: 1px solid var(--line); }
+  section.block.alt { background: var(--paper); }
+  .block h2 { font-size: clamp(1.8rem, 3.6vw, 2.6rem); font-weight: 600; max-width: 22ch; }
+  .block .intro { margin-top: 14px; max-width: 56ch; color: var(--muted); }
+  .split { display: grid; gap: 28px 64px; }
+  @media (min-width: 900px) { .split { grid-template-columns: 0.8fr 1.2fr; } }
+
+  /* Coverage list */
+  dl.cover { margin: 0; }
+  dl.cover div { display: grid; gap: 4px 28px; padding: 20px 0; border-top: 1px solid var(--line); }
+  dl.cover div:last-child { border-bottom: 1px solid var(--line); }
+  @media (min-width: 640px) { dl.cover div { grid-template-columns: 0.55fr 1fr; } }
+  dl.cover dt { font-family: var(--display); font-weight: 600; font-size: 1.2rem; }
+  dl.cover dd { margin: 0; color: var(--muted); max-width: 52ch; }
+
+  /* Steps */
+  ol.steps { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+  ol.steps li { counter-increment: s; display: grid; grid-template-columns: 56px 1fr; gap: 6px 18px; padding: 22px 0; border-top: 1px solid var(--line); }
+  ol.steps li:last-child { border-bottom: 1px solid var(--line); }
+  ol.steps li::before { content: counter(s); font-family: var(--display); font-weight: 700; font-size: 2.2rem; line-height: 1; color: var(--teal); }
+  ol.steps h3 { font-size: 1.25rem; font-weight: 600; }
+  ol.steps p { grid-column: 2; color: var(--muted); max-width: 54ch; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; margin-top: 28px; }
+  table.scores { width: 100%; border-collapse: collapse; font-size: 1rem; min-width: 520px; }
+  table.scores caption { text-align: left; font-family: var(--display); font-weight: 600; padding-bottom: 12px; }
+  table.scores th, table.scores td { text-align: left; padding: 14px 12px 14px 0; border-top: 1px solid var(--line); vertical-align: middle; }
+  table.scores thead th { font-family: var(--display); font-weight: 600; font-size: 0.95rem; color: var(--muted); border-top: 0; }
+  table.scores tfoot th, table.scores tfoot td { border-top: 2px solid var(--ink); font-family: var(--display); font-weight: 700; font-size: 1.1rem; }
+  .bar { display: block; height: 10px; background: var(--fog); border-radius: 5px; overflow: hidden; min-width: 120px; }
+  .bar i { display: block; height: 100%; background: var(--teal); }
+
+  /* FAQ */
+  details { border-top: 1px solid var(--line); padding: 18px 0; }
+  details:last-of-type { border-bottom: 1px solid var(--line); }
+  summary { cursor: pointer; font-family: var(--display); font-weight: 600; font-size: 1.15rem; list-style: none; display: flex; justify-content: space-between; gap: 20px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font-weight: 500; font-size: 1.4rem; line-height: 1; }
+  details[open] summary::after { content: "\2212"; }
+  details p { margin-top: 12px; color: var(--muted); max-width: 62ch; }
+
+  /* Footer */
+  footer.site { background: var(--ink); color: #d4e0e8; padding: 48px 0 110px; }
+  footer.site .wrap { display: grid; gap: 20px; }
+  footer.site strong { color: var(--beacon); font-family: var(--display); font-size: 1.1rem; font-weight: 600; }
+  footer.site p { max-width: 74ch; font-size: 0.98rem; }
+
+  /* Chat widget */
+  .chat-launch {
+    position: fixed; right: 20px; bottom: 20px; z-index: 50;
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--display); font-weight: 600; font-size: 1rem;
+    background: var(--ink); color: var(--paper);
+    border: 2px solid var(--paper); border-radius: 999px;
+    padding: 13px 20px 13px 16px; cursor: pointer;
+    box-shadow: 0 6px 24px rgba(12, 34, 56, 0.35);
+  }
+  .chat-launch:hover { background: #12365a; }
+  .chat-launch .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--beacon); flex: none; }
+  .chat-launch[aria-expanded="true"] { display: none; }
+
+  .chat-panel {
+    position: fixed; right: 20px; bottom: 20px; z-index: 60;
+    width: min(400px, calc(100vw - 40px)); height: min(640px, calc(100vh - 40px));
+    background: var(--paper); border: 2px solid var(--ink); border-radius: 14px;
+    display: flex; flex-direction: column; overflow: hidden;
+    box-shadow: 0 16px 48px rgba(12, 34, 56, 0.4);
+    transform-origin: bottom right;
+    animation: pop 0.22s ease-out;
+  }
+  .chat-panel[hidden] { display: none; }
+  @keyframes pop { from { transform: scale(0.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .chat-panel { animation: none; } }
+  @media (max-width: 560px) {
+    .chat-panel { right: 0; bottom: 0; width: 100vw; height: 100dvh; border-radius: 0; border: 0; }
+  }
+  .chat-head { background: var(--ink); color: var(--paper); display: flex; align-items: center; gap: 10px; padding: 12px 14px; }
+  .chat-head .title { font-family: var(--display); font-weight: 600; flex: 1; line-height: 1.2; }
+  .chat-head .title small { display: block; font-weight: 400; font-size: 0.82rem; color: #b9cad6; }
+  .icon-btn { background: transparent; color: var(--paper); border: 1px solid rgba(246, 249, 250, 0.4); border-radius: 6px; font-family: var(--display); font-size: 0.85rem; padding: 6px 10px; cursor: pointer; }
+  .icon-btn:hover { background: rgba(246, 249, 250, 0.12); }
+  .chat-body { flex: 1; position: relative; background: #fff; }
+  .chat-body iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .chat-empty { padding: 24px 22px; overflow: auto; height: 100%; }
+  .chat-empty h3 { font-size: 1.25rem; font-weight: 600; }
+  .chat-empty p { margin-top: 10px; color: var(--muted); font-size: 1rem; }
+  .chat-empty ol { margin: 14px 0 0; padding-left: 20px; color: var(--muted); font-size: 0.98rem; }
+  .chat-empty code { font-size: 0.88rem; background: var(--fog); padding: 1px 6px; border-radius: 4px; }
+  .chat-foot { font-family: var(--display); font-size: 0.82rem; color: var(--muted); padding: 8px 14px; border-top: 1px solid var(--line); background: var(--paper); }
+</style>
+</head>
+<body>
+
+<div class="notice" role="note">
+  <div class="wrap">
+    <strong>Fictional company</strong>
+    <span>Lumen Harbor Insurance is made up for a portfolio project. It is not an insurer and sells no policies.</span>
+  </div>
+</div>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Lumen Harbor Insurance, fictional demo">
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="18" fill="#0c2238"/>
+        <path d="M20 7 L24 17 H16 Z" fill="#f0b429"/>
+        <rect x="17.5" y="17" width="5" height="12" fill="#f6f9fa"/>
+        <path d="M8 31 C13 28 16 33 20 31 C24 29 27 33 32 31" fill="none" stroke="#7fc0c8" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Lumen Harbor
+    </a>
+    <nav class="primary" aria-label="Main">
+      <a class="hide-sm" href="#coverage">Coverage</a>
+      <a class="hide-sm" href="#blueprint">Blueprint</a>
+      <a class="hide-sm" href="#faq">Questions</a>
+      <button class="btn" type="button" data-open-chat>Talk to the agent</button>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <h1>Read your risk like a harbor chart.</h1>
+        <p class="lede">Lumen Harbor is an imaginary insurer. Its demo agent asks ten short questions, scores your risk profile from 0 to 100, and drafts a plan you can work through before renewal.</p>
+        <div class="actions">
+          <button class="btn" type="button" data-open-chat>Build my risk blueprint</button>
+          <button class="btn ghost" type="button" id="speakBtn">Hear a welcome</button>
+        </div>
+        <p class="fine">Nothing here is real. Do not enter confidential details, company names, or contact information.</p>
+      </div>
+
+      <figure class="chart">
+        <svg viewBox="0 0 600 520" role="img" aria-label="Sample risk chart. Contour lines around a highlighted score of 59, rated Developing.">
+          <g class="grid-line-group">
+            <line class="grid-line" x1="0" y1="130" x2="600" y2="130"/>
+            <line class="grid-line" x1="0" y1="260" x2="600" y2="260"/>
+            <line class="grid-line" x1="0" y1="390" x2="600" y2="390"/>
+            <line class="grid-line" x1="150" y1="0" x2="150" y2="520"/>
+            <line class="grid-line" x1="300" y1="0" x2="300" y2="520"/>
+            <line class="grid-line" x1="450" y1="0" x2="450" y2="520"/>
+          </g>
+          <path class="contour fill-1 draw" style="--i:0" pathLength="1" d="M60,300 C40,180 170,60 320,70 C470,80 560,170 545,300 C530,430 420,490 290,480 C150,470 75,410 60,300 Z"/>
+          <path class="contour fill-2 draw" style="--i:1" pathLength="1" d="M110,295 C95,200 195,115 320,122 C445,130 505,200 495,295 C485,385 400,435 295,428 C190,420 122,372 110,295 Z"/>
+          <path class="contour fill-3 draw" style="--i:2" pathLength="1" d="M160,290 C150,225 220,170 320,175 C415,180 450,230 445,290 C440,350 385,385 300,380 C220,375 168,340 160,290 Z"/>
+          <path class="contour fill-4 draw" style="--i:3" pathLength="1" d="M210,285 C205,245 255,215 320,218 C385,222 400,255 395,285 C390,320 355,340 305,336 C255,332 214,315 210,285 Z"/>
+          <path class="contour fill-4 draw" style="--i:4" pathLength="1" d="M255,280 C253,258 285,246 322,248 C358,250 350,268 348,284 C345,300 330,306 305,304 C280,302 257,298 255,280 Z"/>
+          <g class="sounding fade-in" aria-hidden="true">
+            <text x="82" y="214">31</text>
+            <text x="230" y="98">24</text>
+            <text x="468" y="132">28</text>
+            <text x="510" y="332">17</text>
+            <text x="420" y="428">22</text>
+            <text x="170" y="440">19</text>
+            <text x="128" y="330">14</text>
+            <text x="188" y="212">11</text>
+            <text x="420" y="300">9</text>
+            <text x="262" y="352">12</text>
+          </g>
+          <g class="fade-in">
+            <circle class="beacon-ring" cx="302" cy="277" r="34"/>
+            <text class="beacon-num" x="302" y="288" text-anchor="middle">59</text>
+          </g>
+        </svg>
+        <figcaption>Sample output for a made-up manufacturer: a score of 59, rated Developing. Contours are decoration. Scores here are illustrative only.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="block alt" id="coverage">
+    <div class="wrap split">
+      <div>
+        <h2>What we pretend to cover</h2>
+        <p class="intro">These are plain-language descriptions of common commercial insurance types. They are examples for the demo, not products you can buy.</p>
+      </div>
+      <dl class="cover">
+        <div><dt>General liability</dt><dd>Pays when a customer or visitor says your business caused injury or damage to them.</dd></div>
+        <div><dt>Property</dt><dd>Covers buildings, equipment, and stock after fire, storms, theft, and similar events.</dd></div>
+        <div><dt>Cyber</dt><dd>Helps with the costs of a data breach, ransomware, or a long outage of your systems.</dd></div>
+        <div><dt>Workers' compensation</dt><dd>Covers medical bills and lost wages when an employee is hurt on the job.</dd></div>
+        <div><dt>Commercial auto</dt><dd>Covers vehicles used for business, including the people driving them.</dd></div>
+        <div><dt>Management liability</dt><dd>Protects leaders from claims about how they run the organization.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="block" id="blueprint">
+    <div class="wrap split">
+      <div>
+        <h2>How the blueprint works</h2>
+        <p class="intro">The agent runs the whole process in a chat. It uses a short knowledge file and three skills: scoring, improvement plan, and renewal timeline.</p>
+      </div>
+      <ol class="steps">
+        <li><h3>Answer ten questions</h3><p>Industry, size, claims, safety, cyber, vendors, renewal date, and your main goal. One question at a time.</p></li>
+        <li><h3>Get a score from 0 to 100</h3><p>Five categories are scored from 1 to 5 and weighted. Higher means stronger.</p></li>
+        <li><h3>Read your plan</h3><p>Two or three strengths, three to five improvements ranked by priority, and how they fit your goal.</p></li>
+        <li><h3>Work back from renewal day</h3><p>Dated milestones at 120, 90, 60, and 30 days before your renewal date.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="block alt" id="sample">
+    <div class="wrap">
+      <h2>What a score looks like</h2>
+      <p class="intro">Here is the sample from the chart above. Each category is scored from 1 to 5, then weighted into the final score.</p>
+      <div class="table-wrap">
+        <table class="scores">
+          <caption>Sample category scores for a fictional manufacturer</caption>
+          <thead><tr><th scope="col">Category</th><th scope="col">Weight</th><th scope="col">Score</th><th scope="col"><span class="visually">Bar</span></th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Operations and safety</th><td>25%</td><td>2 of 5</td><td><span class="bar" aria-hidden="true"><i style="width:40%"></i></span></td></tr>
+            <tr><th scope="row">Claims history</th><td>25%</td><td>3 of 5</td><td><span class="bar" aria-hidden="true"><i style="width:60%"></i></span></td></tr>
+            <tr><th scope="row">Cyber</th><td>20%</td><td>4 of 5</td><td><span class="bar" aria-hidden="true"><i style="width:80%"></i></span></td></tr>
+            <tr><th scope="row">Contract and vendor risk</th><td>15%</td><td>3 of 5</td><td><span class="bar" aria-hidden="true"><i style="width:60%"></i></span></td></tr>
+            <tr><th scope="row">Program structure</th><td>15%</td><td>3 of 5</td><td><span class="bar" aria-hidden="true"><i style="width:60%"></i></span></td></tr>
+          </tbody>
+          <tfoot><tr><th scope="row" colspan="2">Risk profile score</th><td colspan="2">59, Developing</td></tr></tfoot>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="faq">
+    <div class="wrap split">
+      <div><h2>Questions</h2></div>
+      <div>
+        <details>
+          <summary>Is Lumen Harbor a real insurance company?</summary>
+          <p>No. It is a fictional company created for a portfolio project. It is not licensed anywhere, has no customers, and sells no insurance.</p>
+        </details>
+        <details>
+          <summary>Can I buy a policy or get a quote?</summary>
+          <p>No. The agent can only give you an illustrative score and plan inside the chat.</p>
+        </details>
+        <details>
+          <summary>Is the score accurate?</summary>
+          <p>No. The weights, rubrics, and recommendations are simplified demo content. Do not use them for real decisions about insurance, risk, or finances.</p>
+        </details>
+        <details>
+          <summary>What should I tell the agent?</summary>
+          <p>General answers only, such as an industry and a size range. Do not share company names, personal details, policy numbers, or anything confidential.</p>
+        </details>
+        <details>
+          <summary>How was this built?</summary>
+          <p>The site is plain HTML, CSS, and a little JavaScript. The agent was built with Microsoft Copilot Studio and added to the page as an embedded chat.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <strong>Lumen Harbor Insurance is not a real company.</strong>
+    <p>This website is a portfolio demonstration. It is not an insurance company, agency, or broker, and it is not licensed in any state or country. Nothing on this site or from the chat agent is insurance, legal, financial, or risk advice. Any resemblance to a real company is a coincidence.</p>
+  </div>
+</footer>
+
+<!-- Chat widget -->
+<button class="chat-launch" type="button" id="chatLaunch" aria-expanded="false" aria-controls="chatPanel" data-open-chat>
+  <span class="dot" aria-hidden="true"></span>Talk to the risk agent
+</button>
+
+<section class="chat-panel" id="chatPanel" role="dialog" aria-label="Risk Blueprint demo agent" hidden>
+  <div class="chat-head">
+    <div class="title">Risk Blueprint agent<small>Fictional demo</small></div>
+    <button class="icon-btn" type="button" id="speakBtn2">Hear welcome</button>
+    <button class="icon-btn" type="button" id="chatClose" aria-label="Close chat">Close</button>
+  </div>
+  <div class="chat-body" id="chatBody">
+    <div class="chat-empty" id="chatEmpty">
+      <h3>Agent not connected yet</h3>
+      <p>This panel is ready for your Copilot Studio agent. To connect it:</p>
+      <ol>
+        <li>In Copilot Studio, open your agent, then go to <strong>Channels</strong>.</li>
+        <li>Choose the <strong>Demo website</strong> or <strong>Custom website</strong> channel and copy the link or the iframe address.</li>
+        <li>Open <code>index.html</code>, find <code>AGENT_EMBED_URL</code>, and paste the address between the quotes.</li>
+        <li>Save, commit, and reload the page.</li>
+      </ol>
+    </div>
+  </div>
+  <div class="chat-foot">Demo only. Not insurance or legal advice.</div>
+</section>
+
+<style>.visually{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}</style>
+
+<script>
+  // ---- Configuration -------------------------------------------------
+  // Paste the address of your published Copilot Studio agent here.
+  // Example shape: https://copilotstudio.microsoft.com/environments/.../bots/.../webchat?__version__=2
+  const AGENT_EMBED_URL = "https://copilotstudio.microsoft.com/environments/Default-44467e6f-462c-4ea2-823f-7800de5434e3/bots/cr29b_riskblueprintdemo_yTLRYI/webchat?__version__=2&enableFileAttachment=false&cliAgent=true";
+
+  const WELCOME_TEXT =
+    "Welcome to Lumen Harbor. This is a fictional insurance company built for a portfolio project. " +
+    "I am a demo agent. I can ask you ten short questions, score your risk profile from zero to one hundred, " +
+    "and sketch an improvement plan with a renewal timeline. Please do not share confidential details. " +
+    "This is a demonstration, not insurance or legal advice.";
+  // --------------------------------------------------------------------
+
+  const panel = document.getElementById("chatPanel");
+  const launch = document.getElementById("chatLaunch");
+  const closeBtn = document.getElementById("chatClose");
+  const body = document.getElementById("chatBody");
+  const empty = document.getElementById("chatEmpty");
+  let loaded = false;
+
+  function openChat() {
+    panel.hidden = false;
+    launch.setAttribute("aria-expanded", "true");
+    if (!loaded && AGENT_EMBED_URL) {
+      const frame = document.createElement("iframe");
+      frame.src = AGENT_EMBED_URL;
+      frame.title = "Risk Blueprint demo agent chat";
+      frame.setAttribute("loading", "lazy");
+      body.appendChild(frame);
+      if (empty) empty.remove();
+      loaded = true;
+    }
+    closeBtn.focus();
+  }
+
+  function closeChat() {
+    panel.hidden = true;
+    launch.setAttribute("aria-expanded", "false");
+    launch.focus();
+  }
+
+  document.querySelectorAll("[data-open-chat]").forEach(function (el) {
+    el.addEventListener("click", openChat);
+  });
+  closeBtn.addEventListener("click", closeChat);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !panel.hidden) closeChat();
+  });
+
+  // Spoken welcome (uses the browser's built-in speech, no audio files)
+  const speakButtons = [document.getElementById("speakBtn"), document.getElementById("speakBtn2")];
+  function setSpeakLabels(text) { speakButtons.forEach(function (b) { if (b) b.textContent = text; }); }
+  function toggleSpeech() {
+    if (!("speechSynthesis" in window)) { setSpeakLabels("Audio not supported"); return; }
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+      setSpeakLabels("Hear a welcome");
+      return;
+    }
+    const u = new SpeechSynthesisUtterance(WELCOME_TEXT);
+    u.rate = 0.98;
+    u.onend = function () { setSpeakLabels("Hear a welcome"); };
+    setSpeakLabels("Stop audio");
+    window.speechSynthesis.speak(u);
+  }
+  speakButtons.forEach(function (b) { if (b) b.addEventListener("click", toggleSpeech); });
+</script>
+</body>
+</html>
